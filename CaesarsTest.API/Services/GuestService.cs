@@ -47,6 +47,11 @@ namespace CaesarsTest.API.Services
             return guest;
         }
 
+        public async Task<Guest> GetGuestFromDb(Guid guestId)
+        {
+            return await _guestRepository.GetGuestAsync(guestId);
+        }
+
         public async Task<IEnumerable<Guest>> GetGuests()
         {
             return await _guestRepository.GetGuestsAsync();
@@ -56,7 +61,9 @@ namespace CaesarsTest.API.Services
         {
             if (await _guestRepository.SaveChangesAsync())
             {
-                _guestCacheService.UpdateGuest(guest);
+                var updatedGuest = await _guestRepository.GetGuestAsync(guest.Id);
+
+                _guestCacheService.UpdateGuest(updatedGuest);
             }
         }
     }

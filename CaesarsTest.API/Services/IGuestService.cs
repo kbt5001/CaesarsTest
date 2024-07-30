@@ -12,6 +12,8 @@ namespace CaesarsTest.API.Services
         
         public Task<Guest> GetGuest(Guid guestId);
 
+        public Task<Guest> GetGuestFromDb(Guid guestId);
+
         public Task<IEnumerable<Guest>> GetGuests();
     }
 }

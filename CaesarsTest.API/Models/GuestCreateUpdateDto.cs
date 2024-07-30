@@ -1,4 +1,6 @@
-﻿namespace CaesarsTest.API.Models
+﻿using CaesarsTest.API.Entities;
+
+namespace CaesarsTest.API.Models
 {
     public class GuestCreateUpdateDto
     {
@@ -12,5 +14,8 @@
         public string City { get; set; }
         public string StateCode { get; set; }
         public string PostalCode { get; set; }
+        public DateTime ArrivalDate { get; set; }
+        public DateTime DepartureDate { get; set; }
+        public int HotelLocationId { get; set; }
     }
 }

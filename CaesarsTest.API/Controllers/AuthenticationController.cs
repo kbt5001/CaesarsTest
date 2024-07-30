@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using CaesarsTest.API.Models;
+using CaesarsTest.API.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CaesarsTest.API.Controllers
 {
@@ -10,23 +8,17 @@ namespace CaesarsTest.API.Controllers
     [ApiController]
     public class AuthenticationController : Controller
     {
-        private readonly IConfiguration _configuration;
+        private readonly IAuthService _authService;
 
-        public class AuthenticationRequest
+        public AuthenticationController(IAuthService authService)
         {
-            public string? UserName { get; set; }
-            public string? Password { get; set; }
-        }
-
-        public AuthenticationController(IConfiguration configuration)
-        {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _authService = authService;
         }
 
         [HttpPost("authenticate")]
         public ActionResult<string> Authenticate(AuthenticationRequest authenticationRequest)
         {
-            var user = ValidateUserCredentials(authenticationRequest.UserName,
+            var user = _authService.ValidateUserCredentials(authenticationRequest.UserName,
                 authenticationRequest.Password);
 
             if (user == null)
@@ -34,52 +26,7 @@ namespace CaesarsTest.API.Controllers
                 return Unauthorized();
             }
 
-            var securityKey = new SymmetricSecurityKey(
-                Encoding.ASCII.GetBytes(_configuration["Authentication:SecretForKey"]));
-            var signingCredentials = new SigningCredentials(
-                securityKey, SecurityAlgorithms.HmacSha256);
-
-            var tokenClaims = new List<Claim>();
-            tokenClaims.Add(new Claim("sub", user.UserId.ToString()));
-            tokenClaims.Add(new Claim("given_name", user.FirstName));
-            tokenClaims.Add(new Claim("family_name", user.LastName));
-            tokenClaims.Add(new Claim("role", user.Role));
-
-            var jwtSecurityToken = new JwtSecurityToken(
-                _configuration["Authentication:Issuer"],
-                _configuration["Authentication:Audience"],
-                tokenClaims,
-                DateTime.UtcNow,
-                DateTime.UtcNow.AddHours(1),
-                signingCredentials);
-
-            var tokenToReturn = new JwtSecurityTokenHandler()
-               .WriteToken(jwtSecurityToken);
-
-            return Ok(tokenToReturn);
-        }
-
-        private User ValidateUserCredentials(string? username, string? password)
-        {
-            return new User(1, username ?? "", "Kirk", "Thomas", "admin");
-        }
-
-        private class User
-        {
-            public int UserId { get; set; }
-            public string UserName { get; set; }
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string Role { get; set; }
-
-            public User(int userId, string userName, string firstName, string lastName, string role)
-            {
-                UserId = userId;
-                UserName = userName;
-                FirstName = firstName;
-                LastName = lastName;
-                Role = role;
-            }
+            return Ok(_authService.GetToken(user));
         }
     }
 }

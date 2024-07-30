@@ -1,6 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using EntityFrameworkCore.EncryptColumn.Attribute;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CaesarsTest.API.Entities
 {
@@ -19,5 +18,9 @@ namespace CaesarsTest.API.Entities
         public string City { get; set; }
         public string StateCode { get; set; }
         public string PostalCode { get; set; }
+        public DateTime ArrivalDate { get; set; }
+        public DateTime DepartureDate { get; set; }
+        [ForeignKey("HotelLocationId")]
+        public int HotelLocationId { get; set; }
     }
 }

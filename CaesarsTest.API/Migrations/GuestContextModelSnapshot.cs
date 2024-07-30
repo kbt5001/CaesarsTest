@@ -35,11 +35,17 @@ namespace CaesarsTest.API.Migrations
                     b.Property<string>("Address2")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("ArrivalDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DepartureDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EmailAddress")
@@ -49,6 +55,9 @@ namespace CaesarsTest.API.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HotelLocationId")
+                        .HasColumnType("int");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -68,17 +77,22 @@ namespace CaesarsTest.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("HotelLocationId");
+
                     b.ToTable("Guests");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c031dcab-f47f-4f27-b430-129ca4fdae3c"),
+                            Id = new Guid("8fcd2a88-95e1-44c2-8d7e-fe500292880e"),
                             Address1 = "345 Front St",
+                            ArrivalDate = new DateTime(2024, 8, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             City = "Atlantic City",
                             DateOfBirth = new DateTime(1980, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DepartureDate = new DateTime(2024, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmailAddress = "fjohnson@kmail.com",
                             FirstName = "Frank",
+                            HotelLocationId = 1,
                             LastName = "Johnson",
                             PhoneNumber = "1234567890",
                             PostalCode = "08201",
@@ -86,13 +100,16 @@ namespace CaesarsTest.API.Migrations
                         },
                         new
                         {
-                            Id = new Guid("d2adc02f-e50b-48eb-9278-b24e6fdc1518"),
+                            Id = new Guid("63e951ff-ccba-4efa-ad95-ad9b167eac37"),
                             Address1 = "123 Main St",
                             Address2 = "Apt 101",
+                            ArrivalDate = new DateTime(2024, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             City = "Atlantic City",
                             DateOfBirth = new DateTime(1962, 4, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DepartureDate = new DateTime(2024, 8, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmailAddress = "jwilliams@kmail.com",
                             FirstName = "Jim",
+                            HotelLocationId = 1,
                             LastName = "Williams",
                             PhoneNumber = "2345678901",
                             PostalCode = "08201",
@@ -100,17 +117,60 @@ namespace CaesarsTest.API.Migrations
                         },
                         new
                         {
-                            Id = new Guid("d9112bdb-cc4b-4c4d-bbfc-3c69334bc133"),
+                            Id = new Guid("2d73aa9a-4c2c-4011-98da-a0abe80556b9"),
                             Address1 = "789 Bridge St",
+                            ArrivalDate = new DateTime(2024, 10, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             City = "Las Vegas",
                             DateOfBirth = new DateTime(1990, 9, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DepartureDate = new DateTime(2024, 10, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmailAddress = "mrichards@kmail.com",
                             FirstName = "Mary",
+                            HotelLocationId = 2,
                             LastName = "Richards",
                             PhoneNumber = "3456789012",
                             PostalCode = "88901",
                             StateCode = "NV"
                         });
+                });
+
+            modelBuilder.Entity("CaesarsTest.API.Entities.HotelLocation", b =>
+                {
+                    b.Property<int>("HotelLocationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HotelLocationId"));
+
+                    b.Property<string>("LocationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("HotelLocationId");
+
+                    b.ToTable("HotelLocations");
+
+                    b.HasData(
+                        new
+                        {
+                            HotelLocationId = 1,
+                            LocationName = "Atlantic City"
+                        },
+                        new
+                        {
+                            HotelLocationId = 2,
+                            LocationName = "Las Vegas"
+                        });
+                });
+
+            modelBuilder.Entity("CaesarsTest.API.Entities.Guest", b =>
+                {
+                    b.HasOne("CaesarsTest.API.Entities.HotelLocation", "HotelLocation")
+                        .WithMany()
+                        .HasForeignKey("HotelLocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HotelLocation");
                 });
 #pragma warning restore 612, 618
         }

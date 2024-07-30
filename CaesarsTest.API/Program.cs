@@ -1,5 +1,8 @@
 using CaesarsTest.API.DbContexts;
+using CaesarsTest.API.Models;
+using CaesarsTest.API.Models.Validations;
 using CaesarsTest.API.Services;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -9,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -18,31 +21,11 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddSwaggerGen();
 
-//builder.Services.AddSwaggerGen(setupAction =>
-//{
-//    setupAction.AddSecurityDefinition("GuestApiBearerAuth", new OpenApiSecurityScheme()
-//    {
-//        Type = SecuritySchemeType.Http,
-//        Scheme = "Bearer",
-//        Description = "Input a valid token to access this API"
-//    });
-
-//    setupAction.AddSecurityRequirement(new OpenApiSecurityRequirement
-//    {
-//        {
-//            new OpenApiSecurityScheme
-//            {
-//                Reference = new OpenApiReference {
-//                    Type = ReferenceType.SecurityScheme,
-//                    Id = "GuestApiBearerAuth" }
-//            }, new List<string>() }
-//    });
-//});
-
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGuestRepository, GuestRepository>();
 builder.Services.AddScoped<IGuestCacheService, GuestCacheService>();
 builder.Services.AddScoped<IGuestService, GuestService>();
-
+builder.Services.AddScoped<IValidator<GuestCreateUpdateDto>, GuestValidator>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

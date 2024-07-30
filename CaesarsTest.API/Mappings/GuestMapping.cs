@@ -7,6 +7,7 @@ namespace CaesarsTest.API.Mappings
         public GuestMapping()
         {
             CreateMap<Entities.Guest, Models.GuestDto>().ReverseMap();
+
             CreateMap<Entities.Guest, Models.GuestCreateUpdateDto>().ReverseMap();
         }
     }
